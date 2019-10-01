@@ -21,12 +21,17 @@ class Token_stream
 	Token buffer{ '0' };
 
 public:
-	Token_stream() { }
+	Token_stream() : in{ cin } { }
+	Token_stream(istream& s) : in{ s } { }
 
 	Token get();
 	void putback(Token t);
 
 	void ignore(char);
+
+private:
+	//...
+	istream& in;
 };
 
 void Token_stream::putback(Token t)
@@ -57,7 +62,7 @@ Token Token_stream::get()
 	}
 
 	char ch;
-	cin >> ch;
+	in>> ch;
 
 	switch (ch)
 	{
@@ -79,9 +84,9 @@ Token Token_stream::get()
 	case '0': case '1': case '2': case '3': case '4':
 	case '5': case '6': case '7': case '8': case '9':
 	{
-		cin.putback(ch);
+		in.putback(ch);
 		double val;
-		cin >> val;
+		in>> val;
 		return Token{ number, val };
 	}
 
@@ -90,10 +95,10 @@ Token Token_stream::get()
 		{
 			string s;
 			s += ch;
-			while (cin.get(ch) &&
+			while (in.get(ch) &&
 				(isalpha(ch) || isdigit(ch)))
 				s += ch;
-			cin.putback(ch);
+			in.putback(ch);
 
 			if (s == declkey) return Token(let);
 
@@ -113,7 +118,7 @@ void Token_stream::ignore(char c)
 	full = false;
 
 	char ch;
-	while (cin >> ch)
+	while (in>> ch)
 		if (ch == c) return;
 }
 
@@ -301,7 +306,8 @@ void clean_up_mess(Token_stream& ts)
 void calculate()
 {
 	Token_stream ts;
-	while (cin)
+
+	while (true)
 		try{
 		cout << prompt;
 		Token t = ts.get();
