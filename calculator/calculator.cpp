@@ -1,13 +1,8 @@
-/*
-  calculator08buggy.cpp
-
-  Helpful comments removed.
-
-  We have inserted 3 bugs that the compiler will catch and 3 that it won't.
-*/
+//
+//       Calculator
+//
 
 #include <std_lib_facilities.h>
-
 
 struct Token
 {
@@ -19,7 +14,6 @@ struct Token
 	Token(char ch, double val) : kind{ ch }, value{ val } { }
 	Token(char ch, string n) : kind{ ch }, name{ n } { }
 };
-
 
 class Token_stream
 {
@@ -35,7 +29,6 @@ public:
 	void ignore(char);
 };
 
-
 void Token_stream::putback(Token t)
 {
 	if (full)
@@ -44,7 +37,6 @@ void Token_stream::putback(Token t)
 	buffer = t;
 	full = true;
 }
-
 
 constexpr char quit = 'q';
 constexpr char print = ';';
@@ -55,7 +47,6 @@ constexpr char let = 'L';
 const string prompt = "> ";
 const string result = "= ";
 const string declkey = "let";
-
 
 Token Token_stream::get()
 {
@@ -112,7 +103,6 @@ Token Token_stream::get()
 	}
 }
 
-
 void Token_stream::ignore(char c)
 {
 	if (full && c == buffer.kind)
@@ -126,7 +116,6 @@ void Token_stream::ignore(char c)
 	while (cin >> ch)
 		if (ch == c) return;
 }
-
 
 struct Variable
 {
@@ -180,34 +169,31 @@ double define_name(string var, double val)
 	return val;
 }
 
+double expression(Token_stream& ts);
 
-Token_stream ts;
-
-double expression();
-
-double primary()
+double primary(Token_stream& ts)
 {
 	Token t = ts.get();
 	switch (t.kind)
 	{
 	case '(':
 	{
-		double d = expression();
+		double d = expression(ts);
 		t = ts.get();
 		if (t.kind != ')') error("'(' expected");
 		return d;
 	}
 	case '{':
 	{
-		double d = expression();
+		double d = expression(ts);
 		t = ts.get();
 		if (t.kind != '}') error("'}' exepcted");
 		return d;
 	}
 	case '-':
-		return -primary();
+		return -primary(ts);
 	case '+':
-		return +primary();
+		return +primary(ts);
 	case number:
 		return t.value;
 	case name:
@@ -217,10 +203,9 @@ double primary()
 	}
 }
 
-
-double term()
+double term(Token_stream& ts)
 {
-	double left = primary();
+	double left = primary(ts);
 	while (true)
 	{
 		Token t = ts.get();
@@ -229,19 +214,19 @@ double term()
 		{
 		case '*':
 		{
-			left *= primary();
+			left *= primary(ts);
 			break;
 		}
 		case '/':
 		{
-			double d = primary();
+			double d = primary(ts);
 			if (d == 0) error("divide by zero");
 			left /= d;
 			break;
 		}
 		case '%':
 		{
-			double d = primary();
+			double d = primary(ts);
 			if (d == 0) error("divide by zero");
 			left = fmod(left, d);
 			break;
@@ -253,10 +238,9 @@ double term()
 	}
 }
 
-
-double expression()
+double expression(Token_stream& ts)
 {
-	double left = term();
+	double left = term(ts);
 	while (true)
 	{
 		Token t = ts.get();
@@ -264,11 +248,11 @@ double expression()
 		switch (t.kind)
 		{
 		case '+':
-			left += term();
+			left += term(ts);
 			break;
 
 		case '-':
-			left -= term();
+			left -= term(ts);
 			break;
 
 		default:
@@ -278,8 +262,7 @@ double expression()
 	}
 }
 
-
-double declaration()
+double declaration(Token_stream& ts)
 {
 	Token t = ts.get();
 	if (t.kind != name)
@@ -292,37 +275,34 @@ double declaration()
 	t = ts.get();
 	if (t.kind != '=')
 		error("'=' missing in declaration of ", var);
-	double d = expression();
+	double d = expression(ts);
 	define_name(var, d);
 	return d;
 }
 
-
-double statement()
+double statement(Token_stream& ts)
 {
 	Token t = ts.get();
 	switch (t.kind)
 	{
 	case let:
-		return declaration();
+		return declaration(ts);
 	default:
 		ts.putback(t);
-		return expression();
+		return expression(ts);
 	}
 }
 
-
-void clean_up_mess()
+void clean_up_mess(Token_stream& ts)
 {
 	ts.ignore(print);
 }
 
-
 void calculate()
 {
+	Token_stream ts;
 	while (cin)
-		try
-	{
+		try{
 		cout << prompt;
 		Token t = ts.get();
 		while (t.kind == print)
@@ -330,15 +310,14 @@ void calculate()
 		if (t.kind == quit) return;
 
 		ts.putback(t);
-		cout << result << statement() << endl;
+		cout << result << statement(ts) << endl;
 	}
 	catch (exception& e)
 	{
 		cerr << e.what() << endl;
-		clean_up_mess();
+		clean_up_mess(ts);
 	}
 }
-
 
 int main()
 try
