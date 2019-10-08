@@ -101,18 +101,26 @@ double expression(Token_stream& ts)
 double declaration(Token_stream& ts)
 {
 	Token t = ts.get();
+	char c = non;
+	if (t.kind == con)
+	{
+		c = con;
+		t = ts.get();
+	}
+
 	if (t.kind != name)
 		error("name expected in declaration");
 
 	string var = t.name;
-	if (is_declared(var))
+	if (is_declared(var) == 1)
 		error(var, " declared twice");
 
 	t = ts.get();
 	if (t.kind != '=')
 		error("'=' missing in declaration of ", var);
+
 	double d = expression(ts);
-	define_name(var, d);
+	define_name(var, d, c);
 	return d;
 }
 
@@ -159,8 +167,8 @@ void calculate()
 int main()
 try
 {
-	define_name("pi", 3.141592653589793);
-	define_name("e", 2.718281828459045);
+	define_name("pi", 3.141592653589793, con);
+	define_name("e", 2.718281828459045, con);
 
 	calculate();
 }

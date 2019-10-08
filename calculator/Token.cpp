@@ -47,16 +47,17 @@ Token Token_stream::get()
 	}
 
 	default:
-		if (isalpha(ch))
+		if (isalpha(ch) || (ch == '_'))
 		{
 			string s;
 			s += ch;
 			while (in.get(ch) &&
-				(isalpha(ch) || isdigit(ch)))
+				(isalpha(ch) || isdigit(ch) || (ch == '_')))
 				s += ch;
 			in.putback(ch);
 
 			if (s == declkey) return Token(let);
+			if (s == constant) return Token(con);
 
 			return Token{ name, s };
 		}

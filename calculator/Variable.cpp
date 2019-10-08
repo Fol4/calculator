@@ -1,4 +1,5 @@
 #include "Variable.h"
+#include "Token.h"
 
 vector<Variable> var_table;
 
@@ -25,19 +26,26 @@ void set_value(string s, double d)
 	error("set: undefined name ", s);
 }
 
-bool is_declared(string s)
+int is_declared(string s)
 {
 	for (Variable& v : var_table)
-		if (v.name == s) return true;
-	return false;
+		if (v.name == s)
+		{
+			if (v.kind == con) return 1;
+			return 2;
+		}
+	return 3;
 }
 
-double define_name(string var, double val)
+double define_name(string var, double val, char type)
 {
-	if (is_declared(var))
-		error(var, " declared twice");
+	if (is_declared(var) == 2) 
+	{
+		set_value(var, val);
+		return val;
+	}
 
-	var_table.push_back(Variable{ var, val });
+	var_table.push_back(Variable{ var, val, type});
 
 	return val;
 }
