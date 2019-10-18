@@ -3,7 +3,7 @@
 void Token_stream::putback(Token t)
 {
 	if (full)
-		error("putback() into a full buffer");
+		runtime_error("putback() into a full buffer");
 
 	buffer = t;
 	full = true;
@@ -61,7 +61,7 @@ Token Token_stream::get()
 
 			return Token{ name, s };
 		}
-		error("Bad token");
+		runtime_error("Bad token");
 	}
 }
 

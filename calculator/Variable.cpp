@@ -1,18 +1,18 @@
-#include "Variable.h"
+#include "Symbol_table.h"
 #include "Token.h"
 
 vector<Variable> var_table;
 
-double get_value(string s)
+double Symbol_table::get(string s)
 {
 	for (Variable& v : var_table)
 		if (v.name == s)
 			return v.value;
 
-	error("get: undefined name ", s);
+	runtime_error("get: undefined name " + s);
 }
 
-void set_value(string s, double d)
+void Symbol_table::set(string s, double d)
 {
 	for (Variable& v : var_table)
 	{
@@ -23,10 +23,10 @@ void set_value(string s, double d)
 		}
 	}
 
-	error("set: undefined name ", s);
+	runtime_error("set: undefined name "+ s);
 }
 
-int is_declared(string s)
+int Symbol_table::is_declared(string s)
 {
 	for (Variable& v : var_table)
 		if (v.name == s)
@@ -37,11 +37,11 @@ int is_declared(string s)
 	return 3;
 }
 
-double define_name(string var, double val, char type)
+double Symbol_table::define(string var, double val, char type)
 {
 	if (is_declared(var) == 2) 
 	{
-		set_value(var, val);
+		set(var, val);
 		return val;
 	}
 

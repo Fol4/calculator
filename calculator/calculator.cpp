@@ -3,45 +3,45 @@
 //
 
 #include "Token.h"
-#include "Variable.h"
+#include "Symbol_table.h"
 
-double expression(Token_stream& ts);
+double expression(Token_stream& ts, Symbol_table& st);
 
-double primary(Token_stream& ts)
+double primary(Token_stream& ts, Symbol_table& st)
 {
 	Token t = ts.get();
 	switch (t.kind)
 	{
 	case '(':
 	{
-		double d = expression(ts);
+		double d = expression(ts, st);
 		t = ts.get();
-		if (t.kind != ')') error("'(' expected");
+		if (t.kind != ')') runtime_error("'(' expected");
 		return d;
 	}
 	case '{':
 	{
-		double d = expression(ts);
+		double d = expression(ts, st);
 		t = ts.get();
-		if (t.kind != '}') error("'}' exepcted");
+		if (t.kind != '}') runtime_error("'}' exepcted");
 		return d;
 	}
 	case '-':
-		return -primary(ts);
+		return -primary(ts, st);
 	case '+':
-		return +primary(ts);
+		return +primary(ts, st);
 	case number:
 		return t.value;
 	case name:
-		return get_value(t.name);
+		return st.get(t.name);
 	default:
-		error("primary expected");
+		runtime_error("primary expected");
 	}
 }
 
-double term(Token_stream& ts)
+double term(Token_stream& ts, Symbol_table& st)
 {
-	double left = primary(ts);
+	double left = primary(ts, st);
 	while (true)
 	{
 		Token t = ts.get();
@@ -50,20 +50,20 @@ double term(Token_stream& ts)
 		{
 		case '*':
 		{
-			left *= primary(ts);
+			left *= primary(ts, st);
 			break;
 		}
 		case '/':
 		{
-			double d = primary(ts);
-			if (d == 0) error("divide by zero");
+			double d = primary(ts, st);
+			if (d == 0) runtime_error("divide by zero");
 			left /= d;
 			break;
 		}
 		case '%':
 		{
-			double d = primary(ts);
-			if (d == 0) error("divide by zero");
+			double d = primary(ts, st);
+			if (d == 0) runtime_error("divide by zero");
 			left = fmod(left, d);
 			break;
 		}
@@ -74,9 +74,9 @@ double term(Token_stream& ts)
 	}
 }
 
-double expression(Token_stream& ts)
+double expression(Token_stream& ts, Symbol_table& st)
 {
-	double left = term(ts);
+	double left = term(ts, st);
 	while (true)
 	{
 		Token t = ts.get();
@@ -84,11 +84,11 @@ double expression(Token_stream& ts)
 		switch (t.kind)
 		{
 		case '+':
-			left += term(ts);
+			left += term(ts, st);
 			break;
 
 		case '-':
-			left -= term(ts);
+			left -= term(ts, st);
 			break;
 
 		default:
@@ -98,7 +98,7 @@ double expression(Token_stream& ts)
 	}
 }
 
-double declaration(Token_stream& ts)
+double declaration(Token_stream& ts, Symbol_table& st)
 {
 	Token t = ts.get();
 	char c = non;
@@ -108,32 +108,29 @@ double declaration(Token_stream& ts)
 		t = ts.get();
 	}
 
-	if (t.kind != name)
-		error("name expected in declaration");
+	if (t.kind != name) throw runtime_error("name expected in declaration");
 
 	string var = t.name;
-	if (is_declared(var) == 1)
-		error(var, " declared twice");
+	if (st.is_declared(var) == 1) throw runtime_error(var + " declared twice");
 
 	t = ts.get();
-	if (t.kind != '=')
-		error("'=' missing in declaration of ", var);
+	if (t.kind != '=') throw runtime_error("'=' missing in declaration of " + var);
 
-	double d = expression(ts);
-	define_name(var, d, c);
+	double d = expression(ts, st);
+	st.define(var, d, c);
 	return d;
 }
 
-double statement(Token_stream& ts)
+double statement(Token_stream& ts, Symbol_table& st)
 {
 	Token t = ts.get();
 	switch (t.kind)
 	{
 	case let:
-		return declaration(ts);
+		return declaration(ts, st);
 	default:
 		ts.putback(t);
-		return expression(ts);
+		return expression(ts,st);
 	}
 }
 
@@ -145,6 +142,7 @@ void clean_up_mess(Token_stream& ts)
 void calculate()
 {
 	Token_stream ts;
+	Symbol_table st;
 
 	while (true)
 		try{
@@ -155,7 +153,7 @@ void calculate()
 		if (t.kind == quit) return;
 
 		ts.putback(t);
-		cout << result << statement(ts) << endl;
+		cout << result << statement(ts, st) << endl;
 	}
 	catch (exception& e)
 	{
@@ -167,8 +165,10 @@ void calculate()
 int main()
 try
 {
-	define_name("pi", 3.141592653589793, con);
-	define_name("e", 2.718281828459045, con);
+	Symbol_table st;
+
+	st.define("pi", 3.141592653589793, con);
+	st.define("e", 2.718281828459045, con);
 
 	calculate();
 }

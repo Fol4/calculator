@@ -32,5 +32,8 @@
     <ClInclude Include="Variable.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
+    <ClInclude Include="Symbol_table.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
