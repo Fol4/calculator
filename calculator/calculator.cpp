@@ -112,6 +112,7 @@ double declaration(Token_stream& ts, Symbol_table& st)
 
 	string var = t.name;
 	if (st.is_declared(var) == 1) throw runtime_error(var + " declared twice");
+	else if (st.is_declared(var) == 2) throw runtime_error(var + " not constant declared constant");
 
 	t = ts.get();
 	if (t.kind != '=') throw runtime_error("'=' missing in declaration of " + var);
@@ -136,7 +137,8 @@ double statement(Token_stream& ts, Symbol_table& st)
 
 void clean_up_mess(Token_stream& ts)
 {
-	ts.ignore(print);
+	ts.ignore(print1);
+	ts.ignore(print2);
 }
 
 void calculate()
@@ -148,7 +150,7 @@ void calculate()
 		try{
 		cout << prompt;
 		Token t = ts.get();
-		while (t.kind == print)
+		while (t.kind == print1 || t.kind == print2)
 			t = ts.get();
 		if (t.kind == quit) return;
 

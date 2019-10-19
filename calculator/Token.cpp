@@ -18,7 +18,9 @@ Token Token_stream::get()
 	}
 
 	char ch;
-	in >> ch;
+	in.get(ch);
+	while(ch == spase)
+		in.get(ch);
 
 	switch (ch)
 	{
@@ -34,6 +36,8 @@ Token Token_stream::get()
 	case '%':
 	case ';':
 	case '=':
+	case ' ':
+	case '\n':
 		return Token{ ch };
 
 	case '.':

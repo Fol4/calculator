@@ -36,7 +36,9 @@ private:
 };
 
 constexpr char quit = 'q';
-constexpr char print = ';';
+constexpr char print1 = ';';
+constexpr char print2 = '\n';
+constexpr char spase = ' ';
 constexpr char number = '8';
 constexpr char name = 'a';
 constexpr char let = 'L';

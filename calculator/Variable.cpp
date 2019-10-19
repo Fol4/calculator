@@ -32,14 +32,16 @@ int Symbol_table::is_declared(string s)
 		if (v.name == s)
 		{
 			if (v.kind == con) return 1;
-			return 2;
+			if (v.kind == non) return 2;
+			return 3;
+
 		}
-	return 3;
+	return 4;
 }
 
 double Symbol_table::define(string var, double val, char type)
 {
-	if (is_declared(var) == 2) 
+	if (is_declared(var) == 3) 
 	{
 		set(var, val);
 		return val;
