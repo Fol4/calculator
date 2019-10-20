@@ -24,7 +24,6 @@ Token Token_stream::get()
 
 	switch (ch)
 	{
-	case 'q':
 	case '(':
 	case ')':
 	case '{':
@@ -36,7 +35,6 @@ Token Token_stream::get()
 	case '%':
 	case ';':
 	case '=':
-	case ' ':
 	case '\n':
 		return Token{ ch };
 
@@ -62,6 +60,8 @@ Token Token_stream::get()
 
 			if (s == declkey) return Token(let);
 			if (s == constant) return Token(con);
+			if (s == quit) return Token(q);
+			if (s == help) return Token(h);
 
 			return Token{ name, s };
 		}
@@ -80,5 +80,5 @@ void Token_stream::ignore(char c)
 
 	char ch;
 	while (in >> ch)
-		if (ch == c) return;
+		if (ch == print1 || ch == print2 || ch == print3) return;
 }

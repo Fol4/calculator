@@ -1,7 +1,8 @@
 #pragma once
 #include <iostream>
 #include <vector>
-#include <string.h>
+#include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -35,9 +36,11 @@ private:
 	istream& in;
 };
 
-constexpr char quit = 'q';
+constexpr char q = 'q';
+constexpr char h = 'h';
 constexpr char print1 = ';';
 constexpr char print2 = '\n';
+constexpr char print3 = '\0';
 constexpr char spase = ' ';
 constexpr char number = '8';
 constexpr char name = 'a';
@@ -49,3 +52,5 @@ const string prompt = "> ";
 const string result = "= ";
 const string declkey = "let";
 const string constant = "const";
+const string quit = "quit";
+const string help = "help";

@@ -1,5 +1,4 @@
 #include "Symbol_table.h"
-#include "Token.h"
 
 vector<Variable> var_table;
 
