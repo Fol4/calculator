@@ -31,6 +31,7 @@ public:
 
 	void ignore(char);
 
+
 private:
 	//...
 	istream& in;

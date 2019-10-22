@@ -8,7 +8,7 @@ double Symbol_table::get(string s)
 		if (v.name == s)
 			return v.value;
 
-	runtime_error("get: undefined name " + s);
+	throw runtime_error("get: undefined name " + s);
 }
 
 void Symbol_table::set(string s, double d)
@@ -22,7 +22,7 @@ void Symbol_table::set(string s, double d)
 		}
 	}
 
-	runtime_error("set: undefined name "+ s);
+	throw runtime_error("set: undefined name "+ s);
 }
 
 int Symbol_table::is_declared(string s)
@@ -31,16 +31,14 @@ int Symbol_table::is_declared(string s)
 		if (v.name == s)
 		{
 			if (v.kind == con) return 1;
-			if (v.kind == non) return 2;
-			return 3;
-
+			return 2;
 		}
-	return 4;
+	return 3;
 }
 
 double Symbol_table::define(string var, double val, char type)
 {
-	if (is_declared(var) == 3) 
+	if (is_declared(var) == 2) 
 	{
 		set(var, val);
 		return val;

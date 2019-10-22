@@ -3,7 +3,7 @@
 void Token_stream::putback(Token t)
 {
 	if (full)
-		runtime_error("putback() into a full buffer");
+		throw runtime_error("putback() into a full buffer");
 
 	buffer = t;
 	full = true;
@@ -36,6 +36,7 @@ Token Token_stream::get()
 	case ';':
 	case '=':
 	case '\n':
+	case '\0':
 		return Token{ ch };
 
 	case '.':
@@ -65,13 +66,13 @@ Token Token_stream::get()
 
 			return Token{ name, s };
 		}
-		runtime_error("Bad token");
+		throw runtime_error("Bad token");
 	}
 }
 
 void Token_stream::ignore(char c)
 {
-	if (full && c == buffer.kind)
+	if (full && (c == buffer.kind))
 	{
 		full = false;
 		return;
@@ -79,6 +80,6 @@ void Token_stream::ignore(char c)
 	full = false;
 
 	char ch;
-	while (in >> ch)
-		if (ch == print1 || ch == print2 || ch == print3) return;
+	while (in.get(ch))
+		if (ch == c || ch == print2 || ch == print3) return;
 }
