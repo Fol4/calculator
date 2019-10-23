@@ -30,6 +30,9 @@
     <ClCompile Include="Calculate.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="Detect.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Symbol_table.h">
@@ -45,6 +48,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Calculate.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Detect.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

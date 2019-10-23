@@ -35,6 +35,8 @@ Token Token_stream::get()
 	case '%':
 	case ';':
 	case '=':
+	case '!':
+	case '^':
 	case '\n':
 	case '\0':
 		return Token{ ch };

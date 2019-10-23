@@ -24,15 +24,25 @@ double primary(Token_stream& ts, Symbol_table& st)
 	case '-':
 		return -primary(ts, st);
 	case number:
+	{
+		auto temp = ts.get();
+		if (temp.kind == '!') return factorial(t.value);
+		ts.putback(temp);
 		return t.value;
+	}
 	case name:
+	{
+		auto temp = ts.get();
+		if (temp.kind == '!') return factorial(st.get(t.name));
+		ts.putback(temp);
 		return st.get(t.name);
+	}
 	default:
 		throw runtime_error("primary expected");
 	}
 }
 
-double term(Token_stream& ts, Symbol_table& st)
+double sub_term(Token_stream& ts, Symbol_table& st)
 {
 	double left = primary(ts, st);
 	while (true)
@@ -41,21 +51,41 @@ double term(Token_stream& ts, Symbol_table& st)
 
 		switch (t.kind)
 		{
+		case '^':
+		{
+			left = pow(left, primary(ts,st));
+			break;
+		}
+		default:
+			ts.putback(t);
+			return left;
+		}
+	}
+}
+double term(Token_stream& ts, Symbol_table& st)
+{
+	double left = sub_term(ts, st);
+	while (true)
+	{
+		Token t = ts.get();
+
+		switch (t.kind)
+		{
 		case '*':
 		{
-			left *= primary(ts, st);
+			left *= sub_term(ts, st);
 			break;
 		}
 		case '/':
 		{
-			double d = primary(ts, st);
+			double d = sub_term(ts, st);
 			if (d == 0) throw runtime_error("divide by zero");
 			left /= d;
 			break;
 		}
 		case '%':
 		{
-			double d = primary(ts, st);
+			double d = sub_term(ts, st);
 			if (d == 0) throw runtime_error("divide by zero");
 			left = fmod(left, d);
 			break;
@@ -157,41 +187,11 @@ double statement(Token_stream& ts, Symbol_table& st, bool d)
 	}
 }
 
-bool detect1(string s)
-{
-	for (int i = 0; i < s.length(); ++i)
-		if (s[i] == '=')
-			return true;
-	return false;
-}
-
-bool detect2(string s)
-{
-	for (int i = 0; i < s.length(); ++i)
-		if (s[i] != spase)
-			return true;
-	return false;
-}
-
-string delete_spase(string s)
-{
-	string s1;
-	for (int i = 0; i < s.length(); ++i)
-		if (s[i] != ' ')
-			s1 += s[i];
-	return s1;
-}
-
-//bool detect3(string& s)
-//{
-//
-//}
 
 vector<string> split(string s)
 {
 	string s1 = "";
 	vector<string> str;
-	//detect3(s);
 	for (int i = 0; i < s.length(); ++i)
 		if (s[i] == ';')
 		{
