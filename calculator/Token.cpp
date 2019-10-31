@@ -19,7 +19,8 @@ Token Token_stream::get()
 
 	char ch;
 	in.get(ch);
-	while(ch == spase)
+
+	while(ch == spase or ch == '\t')
 		in.get(ch);
 
 	switch (ch)

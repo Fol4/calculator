@@ -1,4 +1,4 @@
 #pragma once
 #include "Grammar.h"
 
-void calculate();
+void calculate(Symbol_table& st);

@@ -1,14 +1,17 @@
 #include "Calculate.h"
 
-void calculate()
+void calculate(Symbol_table& st)
 {
-	Symbol_table st;
 
 	while (true)
 	{
 		cout << prompt;
 		string s;
 		getline(cin, s);
+
+		if (!cin.good())
+			exit(0);
+
 		vector<string> str = { split(s) };
 		for (int i = 0; i < str.size(); ++i)
 		{
@@ -28,7 +31,7 @@ void calculate()
 				if (t.kind == q) return;
 				if (t.kind == h)
 				{
-					print_help();
+					print_help(st);
 					continue;
 				}
 				ts.putback(t);

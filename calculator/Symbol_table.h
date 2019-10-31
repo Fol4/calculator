@@ -13,6 +13,8 @@ public:
 
 	double get(string s);
 	void set(string s, double d);
-	int is_declared(string s);
+	declared is_declared(string s);
 	double define(string var, double val, char type);
+	const Variable& get_val(unsigned int i) const;
+	unsigned int var_number() const;
 };

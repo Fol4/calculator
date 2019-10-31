@@ -1,3 +1,4 @@
+
 #include "Grammar.h"
 
 double expression(Token_stream& ts, Symbol_table& st);
@@ -11,7 +12,7 @@ double primary(Token_stream& ts, Symbol_table& st)
 	{
 		double d = expression(ts, st);
 		t = ts.get();
-		if (t.kind != ')') throw  runtime_error("'(' expected");
+		if (t.kind != ')') throw  runtime_error("')' expected");
 		return d;
 	}
 	case '{':
@@ -134,7 +135,7 @@ double declaration(Token_stream& ts, Symbol_table& st)
 	if (t.kind != name) throw runtime_error("name expected in declaration");
 
 	string var = t.name;
-	if (st.is_declared(var) == 2) throw runtime_error(var + " declared twice");
+	if (st.is_declared(var) == declared::is_nonconstant or st.is_declared(var) == declared::is_constant) throw runtime_error(var + " declared twice");
 
 	t = ts.get();
 	if (t.kind != '=') throw runtime_error("'=' missing in declaration of " + var);
@@ -152,12 +153,12 @@ double assignment(Token_stream& ts, Symbol_table& st, bool d1)
 	if (t.kind != name) throw runtime_error("name expected in declaration");
 
 	string var = t.name;
-	if (st.is_declared(var) == 1) throw runtime_error(var + " is constant");
-	else if (st.is_declared(var) == 3) throw runtime_error(var + " not declared");
+	if (st.is_declared(var) == declared::is_not_declared) throw runtime_error(var + " not declared");
 
 	double d;
 	if (d1)
 	{
+		if (st.is_declared(var) == declared::is_constant) throw runtime_error(var + " is constant");
 		t = ts.get();
 		d = expression(ts, st);
 		st.define(var, d, c);
@@ -219,7 +220,48 @@ vector<string> split(string s)
 	return str;
 }
 
-void print_help()
+void print_help(const Symbol_table& st)
 {
-	cout << "123" << endl;
+	cout << "operations :" << '\n'
+		<< "	addition A+B" << '\n'
+		<< "	subtraction A-B" << '\n'
+		<< "	multiplication A*B" << '\n'
+		<< "	division A/B" << '\n'
+		<< "	division with remainder A%B" << '\n'
+		<< "	exponentiation A^B" << '\n'
+		<< "	factorial A!" << '\n'
+		<< "	negative values (-A)" << '\n'
+		<< "functions:" << '\n'
+		<< "	help - help" << '\n'
+		<< "	exit - quit" << '\n'
+		<< "variables:" << '\n'
+		<< "	variable input - let name = value" << '\n'
+		<< "	input constants - let const name = value" << '\n'
+		<< "	assignment - name = value" << '\n'
+		<< "constant:" << endl;
+		
+	for (unsigned int i = 0; i < st.var_number(); ++i)
+	{
+		const auto& var = st.get_val(i);
+		if (var.kind == con)
+			cout << "\t" << var.name << " = " << var.value << endl;
+	}
+}
+
+string read(const string& filename)
+{
+	ifstream ifs( filename );
+
+	if (!ifs) throw runtime_error("Somthing wrong");
+
+	string s1;
+
+	while (!ifs.eof())
+	{
+		string s;
+		getline(ifs, s);
+		s1 += s;
+	}
+
+	return s1;
 }

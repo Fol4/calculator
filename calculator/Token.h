@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <fstream>
 #include <math.h>
 
 using namespace std;
@@ -56,3 +57,7 @@ const string declkey = "let";
 const string constant = "const";
 const string quit = "quit";
 const string help = "help";
+
+enum class declared {
+	is_constant, is_nonconstant, is_not_declared
+};

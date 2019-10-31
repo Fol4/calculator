@@ -19,17 +19,16 @@ string delete_spase(string s)
 {
 	string s1;
 	for (int i = 0; i < s.length(); ++i)
-		if (s[i] != ' ')
+		if (s[i] != ' ' and s[i] != '\t')
 			s1 += s[i];
 	return s1;
 }
 
 bool detect3(string s)
 {
-	string s1 = s;
-	if (s[0] == '.' and s.length() == 1)
-		for (int i = 0; i < s.length() - 3; ++i)
-			if ((s[i] == '-' or s[i] == '+') and s[i + 1] == '-' and s[i + 2] == '-')
+	string s1 = delete_spase(s);
+		for (int i = 0; i < s1.length() - 2; ++i)
+			if ((s1[i] == '-' or s1[i] == '+') and s1[i + 1] == '-' )
 				return true;
 
 	return false;
@@ -37,6 +36,14 @@ bool detect3(string s)
 
 bool detect4(string s)
 {
+
+	if (s[0] == '.')
+	{
+		if (s.length() == 1)
+			return true;
+		else if (!isdigit(s[1]))
+			return true;
+	}
 	for (int i = 1; i < s.length(); ++i)
 		if (s[i] == '.' and (s[i - 1] == '.' or s[i - 1] == ' '))
 			return true;
